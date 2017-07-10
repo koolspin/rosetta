@@ -6,7 +6,7 @@
       "module_path": "filters.tornado_source",
       "class_name": "TornadoSource",
       "instance_name": "tornado_source",
-      "config": { "uri_paths": ["/test", "/t2", ".*"] }
+      "config": { "uri_paths": ["/test", "/t2", "/db/.*"] }
     },
     {
       "module_path": "filters.print_logger",
@@ -39,18 +39,22 @@
       "config": { "const_mime_type": "text/plain", "const_payload": "Filter 2 response!" }
     },
     {
+      "module_path": "filters.sqlite_passthru",
+      "class_name": "SqlitePassthru",
+      "instance_name": "sqlite_passthru_3",
+      "config":
+        {
+          "db_filename": "./var/db/sqlite_test.db",
+          "table_name_re": "device_state",
+          "insert_timestamp": true,
+          "unique_columns": ["device_id"]
+        }
+    },
+    {
       "module_path": "filters.constant_filter",
       "class_name": "ConstantFilter",
       "instance_name": "constant_filter_3",
-      "config":
-        {
-          "const_mime_type": "text/plain",
-          "const_payload": "Filter 3 response!",
-          "const_metadata_dict":
-            {
-              "web_response_status": 404
-            }
-        }
+      "config": { "const_mime_type": "text/plain", "const_payload": "Data saved!" }
     }
   ],
 
@@ -88,7 +92,7 @@
     {
       "source_filter": "print_logger_3",
       "source_pin": "output",
-      "target_filter": "constant_filter_3",
+      "target_filter": "sqlite_passthru_3",
       "target_pin": "input"
     },
     {
@@ -102,6 +106,12 @@
       "source_pin": "output",
       "target_filter": "tornado_source",
       "target_pin": "input2"
+    },
+    {
+      "source_filter": "sqlite_passthru_3",
+      "source_pin": "output",
+      "target_filter": "constant_filter_3",
+      "target_pin": "input"
     },
     {
       "source_filter": "constant_filter_3",

@@ -1,3 +1,4 @@
+import json
 import threading
 import tornado.ioloop
 import tornado.web
@@ -15,6 +16,7 @@ class MainHandler(tornado.web.RequestHandler):
         self._meta_dict = {}
         self._meta_dict[TornadoSource.METADATA_KEY_HANDLER_ID] = id(self)
         self._meta_dict[TornadoSource.METADATA_KEY_REQUEST_URI] = self.request.uri
+        self._meta_dict[TornadoSource.METADATA_KEY_REQUEST_PATH] = self.request.path
         self._meta_dict[TornadoSource.METADATA_KEY_REQUEST_METHOD] = self.request.method
         self._meta_dict[TornadoSource.METADATA_KEY_REQUEST_PROTOCOL] = self.request.protocol
         self._meta_dict[TornadoSource.METADATA_KEY_REQUEST_REMOTE_IP] = self.request.remote_ip
@@ -32,7 +34,9 @@ class MainHandler(tornado.web.RequestHandler):
 
     @tornado.web.asynchronous
     def get(self):
-        self._output_pin.send(self._content_type, self.request.body, self._meta_dict)
+        # Since GET shouldn't contain a body, we parse the arguments into json format and pass that instead
+        js = json.dumps({k: self.get_argument(k) for k in self.request.arguments})
+        self._output_pin.send(TornadoSource.CONTENT_TYPE_APPLICATION_JSON, js, self._meta_dict)
 
     @tornado.web.asynchronous
     def post(self):
@@ -58,6 +62,7 @@ class MainHandler(tornado.web.RequestHandler):
             else:
                 self.set_status(resp_code)
         self.set_header("Content-Type", mime_type)
+        self.set_header("Server", TornadoSource.SERVER_HEADER_FULL)
         self.write(payload)
         self.finish()
 
@@ -68,12 +73,18 @@ class TornadoSource(FilterBase):
     CONFIG_KEY_URI_PATHS = 'uri_paths'
     METADATA_KEY_HANDLER_ID = 'web_handler_id'
     METADATA_KEY_REQUEST_URI = 'web_request_uri'
+    METADATA_KEY_REQUEST_PATH = 'web_request_path'
     METADATA_KEY_REQUEST_METHOD = 'web_request_method'
     METADATA_KEY_REQUEST_PROTOCOL = 'web_request_protocol'
     METADATA_KEY_REQUEST_REMOTE_IP = 'web_request_remote_ip'
     METADATA_KEY_REQUEST_HOST = 'web_request_host'
     METADATA_KEY_REQUEST_HEADERS = 'web_request_headers'
     METADATA_KEY_RESPONSE_STATUS = 'web_response_status'
+    #
+    CONTENT_TYPE_APPLICATION_JSON = 'application/json'
+    #
+    SERVER_HEADER_APPENDED_COMPONENT = 'koolspin/rosetta'
+    SERVER_HEADER_FULL = 'Tornado/{0} {1}'.format(tornado.version, SERVER_HEADER_APPENDED_COMPONENT)
 
     def __init__(self, name, config_dict):
         super().__init__(name, config_dict)
