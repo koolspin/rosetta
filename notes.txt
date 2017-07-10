@@ -1,0 +1,8 @@
+Some notes about this project:
+
+1. The web server (tornado_source) should have a different non-required output pin for each of the http verbs.
+2. This will allow us to wire up filter graphs that correspond to the user's action (GET is much different than POST)
+2a. If the output pin is not wired, should return (throw) a http 405 response. GET and HEAD should return empty info.
+3. sqlite passthru needs to handle unique columns properly. Upsert should make this easier.
+4. For simplicity, maybe we should only support a single unique column per table?
+5. Need to support stop command at the filter level so that filters can intelligently shut themselves down
