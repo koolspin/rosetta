@@ -1,0 +1,113 @@
+{
+  "rosetta_config": "1.0.0",
+
+  "filters": [
+    {
+      "module_path": "filters.tornado_source",
+      "class_name": "TornadoSource",
+      "instance_name": "tornado_source",
+      "config": { "uri_paths": ["/test", "/t2", ".*"] }
+    },
+    {
+      "module_path": "filters.print_logger",
+      "class_name": "PrintLogger",
+      "instance_name": "print_logger_1",
+      "config": {}
+    },
+    {
+      "module_path": "filters.print_logger",
+      "class_name": "PrintLogger",
+      "instance_name": "print_logger_2",
+      "config": {}
+    },
+    {
+      "module_path": "filters.print_logger",
+      "class_name": "PrintLogger",
+      "instance_name": "print_logger_3",
+      "config": {}
+    },
+    {
+      "module_path": "filters.constant_filter",
+      "class_name": "ConstantFilter",
+      "instance_name": "constant_filter_1",
+      "config": { "const_mime_type": "text/plain", "const_payload": "Filter 1 response!" }
+    },
+    {
+      "module_path": "filters.constant_filter",
+      "class_name": "ConstantFilter",
+      "instance_name": "constant_filter_2",
+      "config": { "const_mime_type": "text/plain", "const_payload": "Filter 2 response!" }
+    },
+    {
+      "module_path": "filters.constant_filter",
+      "class_name": "ConstantFilter",
+      "instance_name": "constant_filter_3",
+      "config":
+        {
+          "const_mime_type": "text/plain",
+          "const_payload": "Filter 3 response!",
+          "const_metadata_dict":
+            {
+              "web_response_status": 404
+            }
+        }
+    }
+  ],
+
+  "pin_connections": [
+    {
+      "source_filter": "tornado_source",
+      "source_pin": "output1",
+      "target_filter": "print_logger_1",
+      "target_pin": "input"
+    },
+    {
+      "source_filter": "tornado_source",
+      "source_pin": "output2",
+      "target_filter": "print_logger_2",
+      "target_pin": "input"
+    },
+    {
+      "source_filter": "tornado_source",
+      "source_pin": "output3",
+      "target_filter": "print_logger_3",
+      "target_pin": "input"
+    },
+    {
+      "source_filter": "print_logger_1",
+      "source_pin": "output",
+      "target_filter": "constant_filter_1",
+      "target_pin": "input"
+    },
+    {
+      "source_filter": "print_logger_2",
+      "source_pin": "output",
+      "target_filter": "constant_filter_2",
+      "target_pin": "input"
+    },
+    {
+      "source_filter": "print_logger_3",
+      "source_pin": "output",
+      "target_filter": "constant_filter_3",
+      "target_pin": "input"
+    },
+    {
+      "source_filter": "constant_filter_1",
+      "source_pin": "output",
+      "target_filter": "tornado_source",
+      "target_pin": "input1"
+    },
+    {
+      "source_filter": "constant_filter_2",
+      "source_pin": "output",
+      "target_filter": "tornado_source",
+      "target_pin": "input2"
+    },
+    {
+      "source_filter": "constant_filter_3",
+      "source_pin": "output",
+      "target_filter": "tornado_source",
+      "target_pin": "input3"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "rosetta_config": "1.0.0",
+
+  "filters": [
+    {
+      "module_path": "filters.dummy_source",
+      "class_name": "DummySource",
+      "instance_name": "dummy_source",
+      "config": {}
+    },
+    {
+      "module_path": "filters.tee_filter",
+      "class_name": "TeeFilter",
+      "instance_name": "tee_filter",
+      "config": {"output_pin_count": 2}
+    },
+    {
+      "module_path": "filters.print_logger",
+      "class_name": "PrintLogger",
+      "instance_name": "print_logger_2",
+      "config": {}
+    },
+    {
+      "module_path": "filters.print_logger",
+      "class_name": "PrintLogger",
+      "instance_name": "print_logger_1",
+      "config": {}
+    },
+    {
+      "module_path": "filters.print_logger",
+      "class_name": "PrintLogger",
+      "instance_name": "print_logger_2",
+      "config": {}
+    },
+    {
+      "module_path": "filters.dummy_sink",
+      "class_name": "DummySink",
+      "instance_name": "dummy_sink_1",
+      "config": {}
+    },
+    {
+      "module_path": "filters.dummy_sink",
+      "class_name": "DummySink",
+      "instance_name": "dummy_sink_2",
+      "config": {}
+    }
+  ],
+
+  "pin_connections": [
+    {
+      "source_filter": "dummy_source",
+      "source_pin": "output",
+      "target_filter": "tee_filter",
+      "target_pin": "input"
+    },
+    {
+      "source_filter": "tee_filter",
+      "source_pin": "output1",
+      "target_filter": "print_logger_1",
+      "target_pin": "input"
+    },
+    {
+      "source_filter": "tee_filter",
+      "source_pin": "output2",
+      "target_filter": "print_logger_2",
+      "target_pin": "input"
+    },
+    {
+      "source_filter": "print_logger_1",
+      "source_pin": "output",
+      "target_filter": "dummy_sink_1",
+      "target_pin": "input"
+    },
+    {
+      "source_filter": "print_logger_2",
+      "source_pin": "output",
+      "target_filter": "dummy_sink_2",
+      "target_pin": "input"
+    }
+  ]
+}
