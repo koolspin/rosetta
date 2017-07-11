@@ -6,18 +6,12 @@
       "module_path": "filters.tornado_source",
       "class_name": "TornadoSource",
       "instance_name": "tornado_source",
-      "config": { "uri_paths": ["/test", "/t2", "/db/.*"] }
+      "config": { "uri_paths": ["/test", "/db/.*"] }
     },
     {
       "module_path": "filters.print_logger",
       "class_name": "PrintLogger",
       "instance_name": "print_logger_1",
-      "config": {}
-    },
-    {
-      "module_path": "filters.print_logger",
-      "class_name": "PrintLogger",
-      "instance_name": "print_logger_2",
       "config": {}
     },
     {
@@ -33,21 +27,15 @@
       "config": { "const_mime_type": "text/plain", "const_payload": "Filter 1 response!" }
     },
     {
-      "module_path": "filters.constant_filter",
-      "class_name": "ConstantFilter",
-      "instance_name": "constant_filter_2",
-      "config": { "const_mime_type": "text/plain", "const_payload": "Filter 2 response!" }
-    },
-    {
       "module_path": "filters.sqlite_passthru",
       "class_name": "SqlitePassthru",
       "instance_name": "sqlite_passthru_3",
       "config":
         {
           "db_filename": "./var/db/sqlite_test.db",
-          "table_name_re": "device_state",
+          "table_name_re": "device_.*",
           "insert_timestamp": true,
-          "unique_columns": ["device_id"]
+          "unique_columns": ["device_key"]
         }
     },
     {
@@ -61,19 +49,13 @@
   "pin_connections": [
     {
       "source_filter": "tornado_source",
-      "source_pin": "output1",
+      "source_pin": "output1_get",
       "target_filter": "print_logger_1",
       "target_pin": "input"
     },
     {
       "source_filter": "tornado_source",
-      "source_pin": "output2",
-      "target_filter": "print_logger_2",
-      "target_pin": "input"
-    },
-    {
-      "source_filter": "tornado_source",
-      "source_pin": "output3",
+      "source_pin": "output2_post",
       "target_filter": "print_logger_3",
       "target_pin": "input"
     },
@@ -81,12 +63,6 @@
       "source_filter": "print_logger_1",
       "source_pin": "output",
       "target_filter": "constant_filter_1",
-      "target_pin": "input"
-    },
-    {
-      "source_filter": "print_logger_2",
-      "source_pin": "output",
-      "target_filter": "constant_filter_2",
       "target_pin": "input"
     },
     {
@@ -102,12 +78,6 @@
       "target_pin": "input1"
     },
     {
-      "source_filter": "constant_filter_2",
-      "source_pin": "output",
-      "target_filter": "tornado_source",
-      "target_pin": "input2"
-    },
-    {
       "source_filter": "sqlite_passthru_3",
       "source_pin": "output",
       "target_filter": "constant_filter_3",
@@ -117,7 +87,7 @@
       "source_filter": "constant_filter_3",
       "source_pin": "output",
       "target_filter": "tornado_source",
-      "target_pin": "input3"
+      "target_pin": "input2"
     }
   ]
 }

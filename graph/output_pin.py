@@ -34,16 +34,3 @@ class OutputPin:
         if self._input_pin is not None:
             self._input_pin.recv(mime_type, payload, metadata_dict)
 
-    def send_str(self, mime_type, payload, metadata_dict):
-        """
-        Send a payload in Python string format
-
-        :param mime_type: The mime_type of the payload to be sent
-        :param payload: The payload to be sent
-        :param metadata_dict: A dictionary of metadata values to be passed down the filter chain
-        :return: None
-        """
-        if self._required and (self._input_pin is None):
-            raise ValueError("Output pin {0} is required, but not connected".format(self._pin_name))
-        if self._input_pin is not None:
-            self._input_pin.recv_str(mime_type, payload, metadata_dict)

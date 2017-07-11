@@ -8,9 +8,12 @@ from graph.output_pin import OutputPin
 
 
 class MainHandler(tornado.web.RequestHandler):
-    def initialize(self, filter, output_pin):
+    def initialize(self, filter, opin_get, opin_post, opin_put, opin_delete):
         self._filter = filter
-        self._output_pin = output_pin
+        self._output_pin_get = opin_get
+        self._output_pin_post = opin_post
+        self._output_pin_put = opin_put
+        self._output_pin_delete = opin_delete
         self._filter.register_active_handler(id(self), self)
         #
         self._meta_dict = {}
@@ -36,19 +39,31 @@ class MainHandler(tornado.web.RequestHandler):
     def get(self):
         # Since GET shouldn't contain a body, we parse the arguments into json format and pass that instead
         js = json.dumps({k: self.get_argument(k) for k in self.request.arguments})
-        self._output_pin.send(TornadoSource.CONTENT_TYPE_APPLICATION_JSON, js, self._meta_dict)
+        try:
+            self._output_pin_get.send(TornadoSource.CONTENT_TYPE_APPLICATION_JSON, js, self._meta_dict)
+        except ValueError:
+            raise tornado.web.HTTPError(405)
 
     @tornado.web.asynchronous
     def post(self):
-        self._output_pin.send(self._content_type, self.request.body, self._meta_dict)
+        try:
+            self._output_pin_post.send(self._content_type, self.request.body, self._meta_dict)
+        except ValueError:
+            raise tornado.web.HTTPError(405)
 
     @tornado.web.asynchronous
     def put(self):
-        self._output_pin.send(self._content_type, self.request.body, self._meta_dict)
+        try:
+            self._output_pin_put.send(self._content_type, self.request.body, self._meta_dict)
+        except ValueError:
+            raise tornado.web.HTTPError(405)
 
     @tornado.web.asynchronous
     def delete(self):
-        self._output_pin.send(self._content_type, self.request.body, self._meta_dict)
+        try:
+            self._output_pin_delete.send(self._content_type, self.request.body, self._meta_dict)
+        except ValueError:
+            raise tornado.web.HTTPError(405)
 
     def on_finish(self):
         self._filter.unregister_active_handler(id(self))
@@ -96,7 +111,17 @@ class TornadoSource(FilterBase):
             input_pin_name = 'input{0}'.format(i+1)
             ipin = InputPin(input_pin_name, mime_type_map, self)
             self._add_input_pin(ipin)
-            output_pin_name = 'output{0}'.format(i+1)
+            #
+            output_pin_name = 'output{0}_get'.format(i+1)
+            opin = OutputPin(output_pin_name, True)
+            self._add_output_pin(opin)
+            output_pin_name = 'output{0}_post'.format(i+1)
+            opin = OutputPin(output_pin_name, True)
+            self._add_output_pin(opin)
+            output_pin_name = 'output{0}_put'.format(i+1)
+            opin = OutputPin(output_pin_name, True)
+            self._add_output_pin(opin)
+            output_pin_name = 'output{0}_delete'.format(i+1)
             opin = OutputPin(output_pin_name, True)
             self._add_output_pin(opin)
         #
@@ -106,9 +131,15 @@ class TornadoSource(FilterBase):
     def run(self):
         uri_list = []
         for i in range(len(self._uri_paths)):
-            output_pin_name = 'output{0}'.format(i+1)
-            opin = self.get_output_pin(output_pin_name)
-            t = (self._uri_paths[i], MainHandler, dict(filter=self, output_pin=opin))
+            output_pin_name = 'output{0}_get'.format(i+1)
+            opin_get = self.get_output_pin(output_pin_name)
+            output_pin_name = 'output{0}_post'.format(i+1)
+            opin_post = self.get_output_pin(output_pin_name)
+            output_pin_name = 'output{0}_put'.format(i+1)
+            opin_put = self.get_output_pin(output_pin_name)
+            output_pin_name = 'output{0}_delete'.format(i+1)
+            opin_delete = self.get_output_pin(output_pin_name)
+            t = (self._uri_paths[i], MainHandler, dict(filter=self, opin_get=opin_get, opin_post=opin_post, opin_put=opin_put, opin_delete=opin_delete))
             uri_list.append(t)
         application = tornado.web.Application(uri_list)
         # application = tornado.web.Application([

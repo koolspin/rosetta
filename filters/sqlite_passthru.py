@@ -94,6 +94,8 @@ class SqlitePassthru(FilterBase):
                 typestr = 'TEXT'
             if typestr is not None:
                 sql_stmt += ", {0} {1}".format(key, typestr)
+            if key in self._unique_columns:
+                sql_stmt += " UNIQUE"
         sql_stmt += ")"
         #
         cur = self._db_conn.cursor()
@@ -124,7 +126,7 @@ class SqlitePassthru(FilterBase):
         val_array = []
         ix = 0
         if self._insert_timestamp_flag:
-            now = datetime.datetime.now()
+            now = datetime.datetime.utcnow()
             iso = now.isoformat()
             val_array.append(iso)
             sql_stmt += "?"
