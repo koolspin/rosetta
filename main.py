@@ -14,7 +14,16 @@ def start_loop(loop):
     asyncio.set_event_loop(loop)
     # Run the graph
     graph_manager.run()
+    print("Before loop run forever")
     loop.run_forever()
+    print("After loop run forever")
+    loop.close()
+    print("After loop close")
+
+def stop_loop():
+    print("Before graph mgr stop")
+    graph_manager.stop()
+    print("After graph mgr stop")
 
 new_loop = asyncio.new_event_loop()
 t = Thread(target=start_loop, args=(new_loop,))
@@ -25,8 +34,9 @@ try:
     print("Waiting for termination...")
     t.join()
     print("...after join")
-finally:
-    print("...executing finally")
-    # graph_manager.stop()
+except KeyboardInterrupt:
+    print("...keyboard interrupt")
+    new_loop.call_soon_threadsafe(stop_loop)
     new_loop.stop()
     print("all done!")
+

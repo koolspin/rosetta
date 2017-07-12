@@ -22,3 +22,6 @@ class DummySource(FilterBase):
         mtype2 = 'application/octet-stream'
         b1 = bytes([1, 2, 3, 4, 5])
         self._output_pin.send(mtype2, b1, mdict)
+
+    def stop(self):
+        pass

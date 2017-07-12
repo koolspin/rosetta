@@ -33,14 +33,15 @@ class SqlitePassthru(FilterBase):
         self._add_output_pin(self._output_pin)
 
     def run(self):
-        pass
+        self._db_conn = sqlite3.connect(self._db_filename)
+
+    def stop(self):
+        self._db_conn.close()
+        self._db_conn = None
 
     def recv(self, mime_type, payload, metadata_dict):
         if self._should_process_payload(metadata_dict):
-            # TODO: Should optimize this pattern so that connect and close are done when the filter is run and stopped
-            self._db_conn = sqlite3.connect(self._db_filename)
             self._process_payload(payload, metadata_dict)
-            self._db_conn.close()
         # This is a passthru filter so we need to pass the payload through
         self._output_pin.send(mime_type, payload, metadata_dict)
 

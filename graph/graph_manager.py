@@ -50,4 +50,5 @@ class GraphManager:
             val.run()
 
     def stop(self):
-        raise NotImplementedError("stop method must be implemented")
+        for key, val in self._filters.items():
+            val.stop()

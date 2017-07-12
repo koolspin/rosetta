@@ -145,6 +145,9 @@ class TornadoSource(FilterBase):
         # ])
         application.listen(8888)
 
+    def stop(self):
+        pass
+
     def recv(self, mime_type, payload, metadata_dict):
         handler_id = metadata_dict.get(TornadoSource.METADATA_KEY_HANDLER_ID)
         if handler_id is not None:

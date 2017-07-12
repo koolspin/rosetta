@@ -33,6 +33,9 @@ class FilterBase:
     def run(self):
         raise NotImplementedError("run method must be implemented")
 
+    def stop(self):
+        raise NotImplementedError("stop method must be implemented")
+
     def _add_input_pin(self, input_pin):
         """
         Add an input pin to the collection

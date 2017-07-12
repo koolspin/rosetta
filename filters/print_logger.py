@@ -22,6 +22,9 @@ class PrintLogger(FilterBase):
     def run(self):
         pass
 
+    def stop(self):
+        pass
+
     def recv(self, mime_type, payload, metadata_dict):
         print('Mime type: {0}'.format(mime_type))
         print('meta-dict: {0}'.format(metadata_dict))

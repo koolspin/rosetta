@@ -35,6 +35,9 @@ class TeeFilter(FilterBase):
     def run(self):
         pass
 
+    def stop(self):
+        pass
+
     def recv(self, mime_type, payload, metadata_dict):
         for output_pin in self._output_pins.values():
             output_pin.send(mime_type, payload, metadata_dict)

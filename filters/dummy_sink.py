@@ -18,6 +18,9 @@ class DummySink(FilterBase):
     def run(self):
         pass
 
+    def stop(self):
+        pass
+
     def recv(self, mime_type, payload, metadata_dict):
         pass
 
