@@ -1,7 +1,7 @@
 import json
-import threading
 import tornado.ioloop
 import tornado.web
+from tornado.platform.asyncio import AsyncIOMainLoop
 from graph.filter_base import FilterBase
 from graph.input_pin import InputPin
 from graph.output_pin import OutputPin
@@ -124,11 +124,9 @@ class TornadoSource(FilterBase):
             output_pin_name = 'output{0}_delete'.format(i+1)
             opin = OutputPin(output_pin_name, True)
             self._add_output_pin(opin)
-        #
-        self._ioloop_instance = tornado.ioloop.IOLoop.instance()
-        self._ioloop_thread = threading.Thread(target=self._ioloop_instance.start)
 
     def run(self):
+        AsyncIOMainLoop().install()
         uri_list = []
         for i in range(len(self._uri_paths)):
             output_pin_name = 'output{0}_get'.format(i+1)
@@ -146,7 +144,6 @@ class TornadoSource(FilterBase):
         #     (r".*", MainHandler, dict(output_pin=self._output_pin)),
         # ])
         application.listen(8888)
-        self._ioloop_thread.start()
 
     def recv(self, mime_type, payload, metadata_dict):
         handler_id = metadata_dict.get(TornadoSource.METADATA_KEY_HANDLER_ID)
