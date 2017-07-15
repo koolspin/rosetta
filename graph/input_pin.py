@@ -33,19 +33,3 @@ class InputPin:
             if disp_fun is None:
                 raise ValueError("Pin {0} could not find a dispatcher for {1}".format(self._pin_name, mime_type))
         disp_fun(mime_type, payload, metadata_dict)
-
-    # def recv_str(self, mime_type, payload, metadata_dict):
-    #     """
-    #     Receive a payload in Python string format
-    #
-    #     :param mime_type: The mime_type of the payload being received
-    #     :param payload: The payload to be sent
-    #     :param metadata_dict: A dictionary of metadata values to be passed down the filter chain
-    #     :return: None
-    #     """
-    #     disp_fun = self._mime_type_map.get(mime_type)
-    #     if disp_fun is None:
-    #         disp_fun = self._mime_type_map.get('*')
-    #         if disp_fun is None:
-    #             raise ValueError("Pin {0} could not find a dispatcher for {1}".format(self._pin_name, mime_type))
-    #     disp_fun(mime_type, payload, metadata_dict)
