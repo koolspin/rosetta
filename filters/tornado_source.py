@@ -95,6 +95,8 @@ class TornadoSource(FilterBase):
     METADATA_KEY_REQUEST_HOST = 'web_request_host'
     METADATA_KEY_REQUEST_HEADERS = 'web_request_headers'
     METADATA_KEY_RESPONSE_STATUS = 'web_response_status'
+    METADATA_KEY_RESPONSE_CHARSET = 'web_response_charset'
+    METADATA_KEY_MIME_TYPE = 'mime-type'
     #
     CONTENT_TYPE_APPLICATION_JSON = 'application/json'
     #
