@@ -21,7 +21,8 @@ class SqlitePassthru(FilterBase):
 
     def __init__(self, name, config_dict):
         super().__init__(name, config_dict)
-        self._table_name_re = config_dict[SqlitePassthru.CONFIG_KEY_TABLE_NAME_REGULAR_EXPRESSION]
+        self._table_name_re = config_dict.get(SqlitePassthru.CONFIG_KEY_TABLE_NAME_REGULAR_EXPRESSION)
+        self._table_name = config_dict.get(TornadoSource.METADATA_KEY_DB_TABLE_NAME)
         self._insert_timestamp_flag = config_dict[SqlitePassthru.CONFIG_KEY_INSERT_TIMESTAMP_FLAG]
         self._unique_columns = config_dict.get(SqlitePassthru.CONFIG_KEY_UNIQUE_COLUMNS)
         self._db_filename = config_dict.get(SqlitePassthru.CONFIG_KEY_DB_FILENAME)
@@ -31,6 +32,8 @@ class SqlitePassthru(FilterBase):
         self._add_input_pin(ipin)
         self._output_pin = OutputPin('output', False)
         self._add_output_pin(self._output_pin)
+        # The names of valid columns go here
+        self._valid_cols = []
 
     def run(self):
         self._db_conn = sqlite3.connect(self._db_filename)
@@ -62,6 +65,9 @@ class SqlitePassthru(FilterBase):
                 self._table_name = path_components[2]
                 found = re.match(self._table_name_re, self._table_name)
                 return found
+        else:
+            if self._table_name is not None:
+                return True
         return False
 
     def _process_payload(self, payload, metadata_dict):
@@ -96,6 +102,7 @@ class SqlitePassthru(FilterBase):
                 typestr = 'TEXT'
             if typestr is not None:
                 sql_stmt += ", {0} {1}".format(key, typestr)
+                self._valid_cols.append(key)
             if key in self._unique_columns:
                 sql_stmt += " UNIQUE"
         sql_stmt += ")"
@@ -114,7 +121,7 @@ class SqlitePassthru(FilterBase):
         cols = []
         if self._insert_timestamp_flag:
             cols.append('rosetta_timestamp')
-        for key in payload_dict.keys():
+        for key in self._valid_cols:
             cols.append(key)
         #
         sql_stmt = "INSERT OR REPLACE INTO {0} (".format(table_name)
@@ -133,7 +140,8 @@ class SqlitePassthru(FilterBase):
             val_array.append(iso)
             sql_stmt += "?"
             ix += 1
-        for value in payload_dict.values():
+        for key in self._valid_cols:
+            value = payload_dict[key]
             typestr = None
             if type(value) is int:
                 typestr = 'INTEGER'

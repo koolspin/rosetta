@@ -97,6 +97,7 @@ class TornadoSource(FilterBase):
     METADATA_KEY_RESPONSE_STATUS = 'web_response_status'
     METADATA_KEY_RESPONSE_CHARSET = 'web_response_charset'
     METADATA_KEY_MIME_TYPE = 'mime-type'
+    METADATA_KEY_DB_TABLE_NAME = 'table_name_literal'
     #
     CONTENT_TYPE_APPLICATION_JSON = 'application/json'
     #

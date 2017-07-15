@@ -6,7 +6,7 @@
       "module_path": "filters.http_client",
       "class_name": "HttpClient",
       "instance_name": "http_client",
-      "config": { "web_request_uri": "http://www.crestron.com" }
+      "config": { "web_request_uri": "http://json-schema.org/example/geo.json" }
     },
     {
       "module_path": "filters.print_logger",

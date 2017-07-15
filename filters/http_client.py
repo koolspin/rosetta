@@ -43,8 +43,8 @@ class HttpClient(FilterBase):
         :return:
         """
         try:
-            client = httpclient.AsyncHTTPClient()
-            resp = yield client.fetch(request_uri)
+            client = httpclient.AsyncHTTPClient(defaults=dict(user_agent="Rosetta/1.0"))
+            resp = yield client.fetch(request_uri, validate_cert=False)
             # TODO: Move this parser to an utility class
             content_type = resp.headers.get('Content-Type')
             mime_type = ''
