@@ -1,5 +1,5 @@
 import binascii
-from graph.filter_base import FilterBase
+from graph.filter_base import FilterBase, FilterState
 from graph.input_pin import InputPin
 from graph.output_pin import OutputPin
 
@@ -9,8 +9,8 @@ class PrintLogger(FilterBase):
     A logger that uses print statements to log to stdout.
     """
 
-    def __init__(self, name, config_dict):
-        super().__init__(name, config_dict)
+    def __init__(self, name, config_dict, graph_manager):
+        super().__init__(name, config_dict, graph_manager)
         #
         mime_type_map = {}
         mime_type_map['*'] = self.recv
@@ -20,10 +20,12 @@ class PrintLogger(FilterBase):
         self._add_output_pin(self._output_pin)
 
     def run(self):
-        pass
+        super().run()
+        self._set_filter_state(FilterState.running)
 
     def stop(self):
-        pass
+        super().stop()
+        self._set_filter_state(FilterState.stopped)
 
     def recv(self, mime_type, payload, metadata_dict):
         print('Mime type: {0}'.format(mime_type))
@@ -34,7 +36,10 @@ class PrintLogger(FilterBase):
         else:
             # Must be a binary format, convert to hex first
             print('Payload: {0}'.format(self._stringify_payload(mime_type, payload)))
-        self._output_pin.send(mime_type, payload, metadata_dict)
+        if self.filter_state == FilterState.running:
+            self._output_pin.send(mime_type, payload, metadata_dict)
+        else:
+            raise RuntimeError('{0} tried to process input while filter state is {1}'.format(self.filter_name, self.filter_state))
 
     def _stringify_payload(self, mime_type, payload):
         ret_string = ''

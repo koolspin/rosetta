@@ -9,9 +9,9 @@ class TestGraphBuilder:
     """
     def __init__(self):
         self._filters = {}
-        source_filter = DummySource('dummy_source', )
-        logging_filter = PrintLogger('print_logger', )
-        sink_filter = DummySink('dummy_sink', )
+        source_filter = DummySource('dummy_source')
+        logging_filter = PrintLogger('print_logger')
+        sink_filter = DummySink('dummy_sink')
         self._filters[source_filter.filter_name] = source_filter
         self._filters[logging_filter.filter_name] = logging_filter
         self._filters[sink_filter.filter_name] = sink_filter

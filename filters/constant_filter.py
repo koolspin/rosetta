@@ -1,4 +1,4 @@
-from graph.filter_base import FilterBase
+from graph.filter_base import FilterBase, FilterState
 from graph.input_pin import InputPin
 from graph.output_pin import OutputPin
 
@@ -11,8 +11,8 @@ class ConstantFilter(FilterBase):
     CONFIG_KEY_PAYLOAD = 'const_payload'
     CONFIG_KEY_METADATA_DICT = 'const_metadata_dict'
 
-    def __init__(self, name, config_dict):
-        super().__init__(name, config_dict)
+    def __init__(self, name, config_dict, graph_manager):
+        super().__init__(name, config_dict, graph_manager)
         self._mime_type = config_dict[ConstantFilter.CONFIG_KEY_MIME_TYPE]
         self._payload = config_dict[ConstantFilter.CONFIG_KEY_PAYLOAD]
         self._metadata_dict = config_dict.get(ConstantFilter.CONFIG_KEY_METADATA_DICT)
@@ -24,13 +24,18 @@ class ConstantFilter(FilterBase):
         self._add_output_pin(self._output_pin)
 
     def run(self):
-        pass
+        super().run()
+        self._set_filter_state(FilterState.running)
 
     def stop(self):
-        pass
+        super().stop()
+        self._set_filter_state(FilterState.stopped)
 
     def recv(self, mime_type, payload, metadata_dict):
         if self._metadata_dict is not None:
             for key in self._metadata_dict.keys():
                 metadata_dict[key] = self._metadata_dict[key]
-        self._output_pin.send(self._mime_type, self._payload, metadata_dict)
+        if self.filter_state == FilterState.running:
+            self._output_pin.send(self._mime_type, self._payload, metadata_dict)
+        else:
+            raise RuntimeError('{0} tried to process input while filter state is {1}'.format(self.filter_name, self.filter_state))

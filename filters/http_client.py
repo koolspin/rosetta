@@ -1,7 +1,7 @@
 from tornado import httpclient, gen
 from tornado.platform.asyncio import AsyncIOMainLoop
 from filters.tornado_source import TornadoSource
-from graph.filter_base import FilterBase
+from graph.filter_base import FilterBase, FilterState
 from graph.input_pin import InputPin
 from graph.output_pin import OutputPin
 
@@ -11,8 +11,8 @@ class HttpClient(FilterBase):
     An HTTP client filter
     """
 
-    def __init__(self, name, config_dict):
-        super().__init__(name, config_dict)
+    def __init__(self, name, config_dict, graph_manager):
+        super().__init__(name, config_dict, graph_manager)
         #
         mime_type_map = {}
         mime_type_map['*'] = self.recv
@@ -23,16 +23,25 @@ class HttpClient(FilterBase):
         self._request_uri = config_dict.get(TornadoSource.METADATA_KEY_REQUEST_URI)
 
     def run(self):
+        super().run()
         AsyncIOMainLoop().install()
+        self._set_filter_state(FilterState.running)
+
+    def graph_is_running(self):
+        super().graph_is_running()
         if self._request_uri is not None:
             self._fetch_document(self._request_uri, 'GET')
 
     def stop(self):
-        pass
+        super().stop()
+        self._set_filter_state(FilterState.stopped)
 
     def recv(self, mime_type, payload, metadata_dict):
         request_uri = metadata_dict.get(TornadoSource.METADATA_KEY_REQUEST_URI)
-        self._fetch_document(request_uri, 'GET')
+        if self.filter_state == FilterState.running:
+            self._fetch_document(request_uri, 'GET')
+        else:
+            raise RuntimeError('{0} tried to process input while filter state is {1}'.format(self.filter_name, self.filter_state))
 
     @gen.coroutine
     def _fetch_document(self, request_uri, http_method):

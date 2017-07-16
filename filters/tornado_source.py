@@ -2,7 +2,7 @@ import json
 import tornado.ioloop
 import tornado.web
 from tornado.platform.asyncio import AsyncIOMainLoop
-from graph.filter_base import FilterBase
+from graph.filter_base import FilterBase, FilterState
 from graph.input_pin import InputPin
 from graph.output_pin import OutputPin
 
@@ -81,6 +81,7 @@ class MainHandler(tornado.web.RequestHandler):
         self.write(payload)
         self.finish()
 
+
 class TornadoSource(FilterBase):
     """
     A Tornado instance represented as a source filter
@@ -104,8 +105,9 @@ class TornadoSource(FilterBase):
     SERVER_HEADER_APPENDED_COMPONENT = 'koolspin/rosetta'
     SERVER_HEADER_FULL = 'Tornado/{0} {1}'.format(tornado.version, SERVER_HEADER_APPENDED_COMPONENT)
 
-    def __init__(self, name, config_dict):
-        super().__init__(name, config_dict)
+    def __init__(self, name, config_dict, graph_manager):
+        super().__init__(name, config_dict, graph_manager)
+        self._application = None
         self._active_handlers = {}
         self._uri_paths = self._config_dict.get(TornadoSource.CONFIG_KEY_URI_PATHS)
         for i in range(len(self._uri_paths)):
@@ -129,6 +131,7 @@ class TornadoSource(FilterBase):
             self._add_output_pin(opin)
 
     def run(self):
+        super().run()
         AsyncIOMainLoop().install()
         uri_list = []
         for i in range(len(self._uri_paths)):
@@ -142,14 +145,20 @@ class TornadoSource(FilterBase):
             opin_delete = self.get_output_pin(output_pin_name)
             t = (self._uri_paths[i], MainHandler, dict(filter=self, opin_get=opin_get, opin_post=opin_post, opin_put=opin_put, opin_delete=opin_delete))
             uri_list.append(t)
-        application = tornado.web.Application(uri_list)
+        self._application = tornado.web.Application(uri_list)
         # application = tornado.web.Application([
         #     (r".*", MainHandler, dict(output_pin=self._output_pin)),
         # ])
-        application.listen(8888)
+        self._set_filter_state(FilterState.running)
+
+    def graph_is_running(self):
+        super().graph_is_running()
+        self._application.listen(8888)
 
     def stop(self):
-        pass
+        super().stop()
+        # TODO: Need to stop the server here
+        self._set_filter_state(FilterState.stopped)
 
     def recv(self, mime_type, payload, metadata_dict):
         handler_id = metadata_dict.get(TornadoSource.METADATA_KEY_HANDLER_ID)

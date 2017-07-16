@@ -10,7 +10,7 @@
         {
           "timer_mime_type": "text/plain",
           "timer_payload": "dummy",
-          "timer_delay_seconds": 5.0,
+          "timer_delay_seconds": 60.0,
           "timer_metadata_dict":
             {
               "web_request_uri": "http://www.hl7.org/fhir/document-example-dischargesummary.json"

@@ -5,7 +5,7 @@ import datetime
 import sqlite3
 
 from filters.tornado_source import TornadoSource
-from graph.filter_base import FilterBase
+from graph.filter_base import FilterBase, FilterState
 from graph.input_pin import InputPin
 from graph.output_pin import OutputPin
 
@@ -19,8 +19,8 @@ class SqlitePassthru(FilterBase):
     CONFIG_KEY_UNIQUE_COLUMNS = 'unique_columns'
     CONFIG_KEY_DB_FILENAME = 'db_filename'
 
-    def __init__(self, name, config_dict):
-        super().__init__(name, config_dict)
+    def __init__(self, name, config_dict, graph_manager):
+        super().__init__(name, config_dict, graph_manager)
         self._table_name_re = config_dict.get(SqlitePassthru.CONFIG_KEY_TABLE_NAME_REGULAR_EXPRESSION)
         self._table_name = config_dict.get(TornadoSource.METADATA_KEY_DB_TABLE_NAME)
         self._insert_timestamp_flag = config_dict[SqlitePassthru.CONFIG_KEY_INSERT_TIMESTAMP_FLAG]
@@ -36,17 +36,24 @@ class SqlitePassthru(FilterBase):
         self._valid_cols = []
 
     def run(self):
+        super().run()
         self._db_conn = sqlite3.connect(self._db_filename)
+        self._set_filter_state(FilterState.running)
 
     def stop(self):
+        super().stop()
         self._db_conn.close()
         self._db_conn = None
+        self._set_filter_state(FilterState.stopped)
 
     def recv(self, mime_type, payload, metadata_dict):
         if self._should_process_payload(metadata_dict):
             self._process_payload(payload, metadata_dict)
         # This is a passthru filter so we need to pass the payload through
-        self._output_pin.send(mime_type, payload, metadata_dict)
+        if self.filter_state == FilterState.running:
+            self._output_pin.send(mime_type, payload, metadata_dict)
+        else:
+            raise RuntimeError('{0} tried to process input while filter state is {1}'.format(self.filter_name, self.filter_state))
 
     def _should_process_payload(self, metadata_dict):
         """
