@@ -9,6 +9,8 @@ class GraphManager:
     """
     def __init__(self):
         self._filters = {}
+        # Set true if the graph is continuous - in other words, at least one filter is continuous
+        self._is_continuous = False
 
     def filter_factory(self, module_path, class_name, instance_name, config_dict):
         """
@@ -43,6 +45,35 @@ class GraphManager:
         tfilt = self._filters.get(target_filter)
         tpin = tfilt.get_input_pin(target_pin)
         spin.connect_to_pin(tpin)
+
+    def validate_graph(self):
+        """
+        Validate the graph as being valid.
+        Here are the checks that are done:
+        1. All filters that are part of the graph have the required pins connected.
+        2. Every filter must have at least a single pin
+        :return:
+        """
+        validate_flag = True
+        opin_count = 0
+        ipin_count = 0
+        for key, val in self._filters.items():
+            print('Validating filter {0}'.format(val.filter_name))
+            if val.is_continuous:
+                self._is_continuous = True
+            opins = val.get_all_output_pins()
+            opin_count = len(opins)
+            for opin_key, open_val in opins:
+                if open_val.is_required:
+                    if not open_val.is_connected:
+                        print('Output pin {0} is required, but is not connected'.format(open_val.pin_name))
+            ipins = val.get_all_input_pins()
+            ipin_count = len(ipins)
+        if ipin_count + opin_count < 1:
+            print('Filter has no input or output pins')
+        if self._is_continuous:
+            print('Filter graph is continuous')
+        return validate_flag
 
     def run(self):
         """

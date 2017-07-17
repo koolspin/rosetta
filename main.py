@@ -9,6 +9,8 @@ with open('config.json', 'r') as myfile:
 graph_manager = GraphManager()
 graph_builder = GraphBuilder(graph_manager, config_txt)
 graph_builder.build_graph()
+ok = graph_manager.validate_graph()
+print('Graph validated: {0}'.format(ok))
 
 def start_loop(loop):
     asyncio.set_event_loop(loop)

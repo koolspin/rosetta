@@ -17,6 +17,14 @@ class OutputPin:
     def pin_name(self):
         return self._pin_name
 
+    @property
+    def is_required(self):
+        return self._required
+
+    @property
+    def is_connected(self):
+        return self._input_pin is not None
+
     def connect_to_pin(self, input_pin):
         self._input_pin = input_pin
 

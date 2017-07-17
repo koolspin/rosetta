@@ -107,6 +107,8 @@ class TornadoSource(FilterBase):
 
     def __init__(self, name, config_dict, graph_manager):
         super().__init__(name, config_dict, graph_manager)
+        self._is_continuous = True
+        #
         self._application = None
         self._active_handlers = {}
         self._uri_paths = self._config_dict.get(TornadoSource.CONFIG_KEY_URI_PATHS)

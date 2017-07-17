@@ -37,6 +37,12 @@ class FilterBase:
         self._output_pins = {}
         self._filter_state = FilterState.stopped
         self._graph_manager = graph_manager
+        # A filter is continuous if it can generate multiple output events over a normal lifetime.
+        # Ex: A web server filter or network socket filter
+        # A filter is not continuous if it usually generates a single output event.
+        # Ex: A file reader filter
+        # A graph that contain no continuous filters is able to run in one-shot mode
+        self._is_continuous = False
 
     @property
     def filter_name(self):
@@ -45,6 +51,10 @@ class FilterBase:
     @property
     def filter_state(self):
         return self._filter_state
+
+    @property
+    def is_continuous(self):
+        return self._is_continuous
 
     def get_input_pin(self, input_pin_name):
         """
@@ -55,6 +65,9 @@ class FilterBase:
         ipin = self._input_pins.get(input_pin_name)
         return ipin
 
+    def get_all_input_pins(self):
+        return self._input_pins.items()
+
     def get_output_pin(self, output_pin_name):
         """
         Return a reference to the input pin by name
@@ -63,6 +76,9 @@ class FilterBase:
         """
         opin = self._output_pins.get(output_pin_name)
         return opin
+
+    def get_all_output_pins(self):
+        return self._output_pins.items()
 
     def run(self):
         """

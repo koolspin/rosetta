@@ -17,6 +17,7 @@ class Timer(FilterBase):
 
     def __init__(self, name, config_dict, graph_manager):
         super().__init__(name, config_dict, graph_manager)
+        self._is_continuous = True
         #
         mime_type_map = {}
         mime_type_map['*'] = self.recv
