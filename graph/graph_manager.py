@@ -82,7 +82,7 @@ class GraphManager:
                 self._source_filters[val.filter_name] = val
             elif val.filter_type == FilterType.transform:
                 self._transform_filters[val.filter_name] = val
-            if val.filter_type == FilterType.sink:
+            elif val.filter_type == FilterType.sink:
                 self._sink_filters[val.filter_name] = val
             else:
                 print("Incorrect filter type for {0}".format(val.filter_name))
