@@ -1,6 +1,6 @@
 import asyncio
 from contextlib import suppress
-from graph.filter_base import FilterBase, FilterState
+from graph.filter_base import FilterBase, FilterState, FilterType
 from graph.input_pin import InputPin
 from graph.output_pin import OutputPin
 
@@ -16,7 +16,7 @@ class Timer(FilterBase):
     CONFIG_KEY_TIMER_DELAY_SECONDS = 'timer_delay_seconds'
 
     def __init__(self, name, config_dict, graph_manager):
-        super().__init__(name, config_dict, graph_manager)
+        super().__init__(name, config_dict, graph_manager, FilterType.source)
         self._is_continuous = True
         #
         mime_type_map = {}
@@ -39,6 +39,7 @@ class Timer(FilterBase):
 
     def graph_is_running(self):
         super().graph_is_running()
+        self._cycle_started()
         self._task = asyncio.ensure_future(self._run())
 
     def stop(self):

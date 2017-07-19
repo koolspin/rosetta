@@ -2,7 +2,7 @@ import json
 import tornado.ioloop
 import tornado.web
 from tornado.platform.asyncio import AsyncIOMainLoop
-from graph.filter_base import FilterBase, FilterState
+from graph.filter_base import FilterBase, FilterState, FilterType
 from graph.input_pin import InputPin
 from graph.output_pin import OutputPin
 
@@ -106,7 +106,7 @@ class TornadoSource(FilterBase):
     SERVER_HEADER_FULL = 'Tornado/{0} {1}'.format(tornado.version, SERVER_HEADER_APPENDED_COMPONENT)
 
     def __init__(self, name, config_dict, graph_manager):
-        super().__init__(name, config_dict, graph_manager)
+        super().__init__(name, config_dict, graph_manager, FilterType.source)
         self._is_continuous = True
         #
         self._application = None

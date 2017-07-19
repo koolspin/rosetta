@@ -1,4 +1,4 @@
-from graph.filter_base import FilterBase, FilterState
+from graph.filter_base import FilterBase, FilterState, FilterType
 from graph.input_pin import InputPin
 
 
@@ -8,7 +8,7 @@ class DummySink(FilterBase):
     """
 
     def __init__(self, name, config_dict, graph_manager):
-        super().__init__(name, config_dict, graph_manager)
+        super().__init__(name, config_dict, graph_manager, FilterType.sink)
         #
         mime_type_map = {}
         mime_type_map['*'] = self.recv
@@ -25,7 +25,7 @@ class DummySink(FilterBase):
 
     def recv(self, mime_type, payload, metadata_dict):
         if self.filter_state == FilterState.running:
-            pass
+            self._cycle_ended()
         else:
             raise RuntimeError('{0} tried to process input while filter state is {1}'.format(self.filter_name, self.filter_state))
 

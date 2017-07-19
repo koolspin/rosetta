@@ -1,4 +1,4 @@
-from graph.filter_base import FilterBase, FilterState
+from graph.filter_base import FilterBase, FilterState, FilterType
 from graph.output_pin import OutputPin
 
 
@@ -9,7 +9,7 @@ class DummySource(FilterBase):
     """
 
     def __init__(self, name, config_dict, graph_manager):
-        super().__init__(name, config_dict, graph_manager)
+        super().__init__(name, config_dict, graph_manager, FilterType.source)
         self._output_pin = OutputPin('output', True)
         self._add_output_pin(self._output_pin)
 

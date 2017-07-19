@@ -1,6 +1,6 @@
 import importlib
 
-from graph.filter_base import FilterState
+from graph.filter_base import FilterState, FilterType
 
 
 class GraphManager:
@@ -8,7 +8,12 @@ class GraphManager:
     Manages the entire graph
     """
     def __init__(self):
+        # All filters are mapped here
         self._filters = {}
+        # FilterType specific mappings are here
+        self._source_filters = {}
+        self._transform_filters = {}
+        self._sink_filters = {}
         # Set true if the graph is continuous - in other words, at least one filter is continuous
         self._is_continuous = False
 
@@ -52,7 +57,9 @@ class GraphManager:
         Here are the checks that are done:
         1. All filters that are part of the graph have the required pins connected.
         2. Every filter must have at least a single pin
-        :return:
+        3. Must be at least one source filter in the graph
+        4. Must be at least one sink filter in the graph
+        :return: True if the graph is OK, False otherwise
         """
         validate_flag = True
         opin_count = 0
@@ -67,12 +74,35 @@ class GraphManager:
                 if open_val.is_required:
                     if not open_val.is_connected:
                         print('Output pin {0} is required, but is not connected'.format(open_val.pin_name))
+                        validate_flag = False
             ipins = val.get_all_input_pins()
             ipin_count = len(ipins)
+            #
+            if val.filter_type == FilterType.source:
+                self._source_filters[val.filter_name] = val
+            elif val.filter_type == FilterType.transform:
+                self._transform_filters[val.filter_name] = val
+            if val.filter_type == FilterType.sink:
+                self._sink_filters[val.filter_name] = val
+            else:
+                print("Incorrect filter type for {0}".format(val.filter_name))
+                validate_flag = False
         if ipin_count + opin_count < 1:
             print('Filter has no input or output pins')
+            validate_flag = False
         if self._is_continuous:
             print('Filter graph is continuous')
+        #
+        print("{0} total filters in graph".format(len(self._filters)))
+        print("{0} source filters in graph".format(len(self._source_filters)))
+        print("{0} transform filters in graph".format(len(self._transform_filters)))
+        print("{0} sink filters in graph".format(len(self._sink_filters)))
+        if len(self._source_filters) < 1:
+            print('Graph has no source filters')
+            validate_flag = False
+        if len(self._sink_filters) < 1:
+            print('Graph has no sink filters')
+            validate_flag = False
         return validate_flag
 
     def run(self):
@@ -105,6 +135,24 @@ class GraphManager:
                 print('All filters have transitioned to stopped state. Sending graph_has_stopped event')
                 for key, val in self._filters.items():
                     val.graph_has_stopped()
+
+    def cycle_started(self, filter):
+        """
+        Called by a filter when a graph cycle has started (ie web request is made, file is read, etc)
+        :param filter: A reference to the filter which is starting the cycle.
+        :return:
+        """
+        print('cycle started - filter {0}'.format(filter.filter_name))
+
+    def cycle_ended(self, filter):
+        """
+        Called by a filter when a graph cycle has ended (ie db is written, web response sent, etc)
+        Note the cycle isn't actually ended until all sink filters in the current graph have reported the cycle ending.
+        :param filter: A reference to the filter which is ending the cycle.
+        :return:
+        """
+        print('cycle ended - filter {0}'.format(filter.filter_name))
+
 
     def _have_all_filters_transitioned(self, new_state):
         """

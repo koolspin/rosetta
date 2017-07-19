@@ -5,7 +5,7 @@ import datetime
 import sqlite3
 
 from filters.tornado_source import TornadoSource
-from graph.filter_base import FilterBase, FilterState
+from graph.filter_base import FilterBase, FilterState, FilterType
 from graph.input_pin import InputPin
 from graph.output_pin import OutputPin
 
@@ -20,7 +20,7 @@ class SqlitePassthru(FilterBase):
     CONFIG_KEY_DB_FILENAME = 'db_filename'
 
     def __init__(self, name, config_dict, graph_manager):
-        super().__init__(name, config_dict, graph_manager)
+        super().__init__(name, config_dict, graph_manager, FilterType.sink)
         self._table_name_re = config_dict.get(SqlitePassthru.CONFIG_KEY_TABLE_NAME_REGULAR_EXPRESSION)
         self._table_name = config_dict.get(TornadoSource.METADATA_KEY_DB_TABLE_NAME)
         self._insert_timestamp_flag = config_dict[SqlitePassthru.CONFIG_KEY_INSERT_TIMESTAMP_FLAG]

@@ -1,4 +1,4 @@
-from graph.filter_base import FilterBase, FilterState
+from graph.filter_base import FilterBase, FilterState, FilterType
 from graph.input_pin import InputPin
 from graph.output_pin import OutputPin
 
@@ -12,7 +12,7 @@ class TeeFilter(FilterBase):
     MAX_OUTPUT_COUNT = 128
 
     def __init__(self, name, config_dict, graph_manager):
-        super().__init__(name, config_dict, graph_manager)
+        super().__init__(name, config_dict, graph_manager, FilterType.transform)
         #
         mime_type_map = {}
         mime_type_map['*'] = self.recv

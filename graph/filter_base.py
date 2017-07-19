@@ -26,17 +26,39 @@ class FilterState(Enum):
     error = 4
 
 
+class FilterType(Enum):
+    """
+    This enum contains the types of filter.
+
+    source: Filter is used to generate data to be passed down the pipline.
+            Examples: File reader, HTTP get, web server, network socket, constants and literal values.
+
+    transform: Filter is used to optionally change the format or content of the payload.
+               Examples: Logger, XML -> JSON converter, Base64 encoder / decoder, Protocol buf serializer.
+
+    sink: Filter is used to write or send data elsewhere.
+          Examples: File writer, HTTP post, sqlite db, postgresql db, network socket, etc.
+
+    A valid graph must contain at least one source and one sink.
+    TODO: How do we handle filters that can be both like a network socket?
+    """
+    source = 0
+    transform = 1
+    sink = 2
+
+
 class FilterBase:
     """
     Rosetta graph filter base object
     """
-    def __init__(self, name, config_dict, graph_manager):
+    def __init__(self, name, config_dict, graph_manager, filter_type):
         self._filter_name = name
         self._config_dict = config_dict
         self._input_pins = {}
         self._output_pins = {}
         self._filter_state = FilterState.stopped
         self._graph_manager = graph_manager
+        self._filter_type = filter_type
         # A filter is continuous if it can generate multiple output events over a normal lifetime.
         # Ex: A web server filter or network socket filter
         # A filter is not continuous if it usually generates a single output event.
@@ -51,6 +73,10 @@ class FilterBase:
     @property
     def filter_state(self):
         return self._filter_state
+
+    @property
+    def filter_type(self):
+        return self._filter_type
 
     @property
     def is_continuous(self):
@@ -136,3 +162,23 @@ class FilterBase:
         """
         self._filter_state = new_state
         self._graph_manager.filter_changed_state(self)
+
+    def _cycle_started(self):
+        """
+        Called by source filters to mark the start of a cycle
+        :return:
+        """
+        if self._filter_type == FilterType.source:
+            self._graph_manager.cycle_started(self)
+        else:
+            raise RuntimeError("Could not start cycle because this is not a source filter - {0}".format(self.filter_name))
+
+    def _cycle_ended(self):
+        """
+        Called by sink filters to mark the end of a cycle
+        :return:
+        """
+        if self._filter_type == FilterType.sink:
+            self._graph_manager.cycle_ended(self)
+        else:
+            raise RuntimeError("Could not end cycle because this is not a sink filter - {0}".format(self.filter_name))

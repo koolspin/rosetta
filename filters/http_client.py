@@ -1,7 +1,7 @@
 from tornado import httpclient, gen
 from tornado.platform.asyncio import AsyncIOMainLoop
 from filters.tornado_source import TornadoSource
-from graph.filter_base import FilterBase, FilterState
+from graph.filter_base import FilterBase, FilterState, FilterType
 from graph.input_pin import InputPin
 from graph.output_pin import OutputPin
 
@@ -12,7 +12,7 @@ class HttpClient(FilterBase):
     """
 
     def __init__(self, name, config_dict, graph_manager):
-        super().__init__(name, config_dict, graph_manager)
+        super().__init__(name, config_dict, graph_manager, FilterType.source)
         #
         mime_type_map = {}
         mime_type_map['*'] = self.recv

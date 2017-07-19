@@ -1,9 +1,18 @@
 from threading import Thread
 import asyncio
+import argparse
 from graph.graph_builder import GraphBuilder
 from graph.graph_manager import GraphManager
 
-with open('config.json', 'r') as myfile:
+config_filename = 'config.json'
+parser = argparse.ArgumentParser()
+parser.add_argument("-c", "--config", help="Name of the config file, ex: config.json")
+args = parser.parse_args()
+if args.config is not None:
+    config_filename = args.config
+print('config: {0}'.format(config_filename))
+
+with open(config_filename, 'r') as myfile:
     config_txt = myfile.read()
 
 graph_manager = GraphManager()
