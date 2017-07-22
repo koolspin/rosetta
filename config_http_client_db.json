@@ -9,8 +9,8 @@
       "config": { "web_request_uri": "https://api.nasa.gov/neo/rest/v1/feed?start_date=2015-09-07&end_date=2015-09-08&api_key=DEMO_KEY" }
     },
     {
-      "module_path": "filters.print_logger",
-      "class_name": "PrintLogger",
+      "module_path": "filters.logger_transform",
+      "class_name": "LoggerTransform",
       "instance_name": "print_logger_1",
       "config": {}
     },

@@ -18,14 +18,14 @@
         }
     },
     {
-      "module_path": "filters.http_client",
-      "class_name": "HttpClient",
+      "module_path": "filters.http_client_source",
+      "class_name": "HttpClientSource",
       "instance_name": "http_client",
       "config": {}
     },
     {
-      "module_path": "filters.print_logger",
-      "class_name": "PrintLogger",
+      "module_path": "logger_transform",
+      "class_name": "LoggerTransform",
       "instance_name": "print_logger_1",
       "config": {}
     },

@@ -4,13 +4,16 @@ from graph.input_pin import InputPin
 from graph.output_pin import OutputPin
 
 
-class PrintLogger(FilterBase):
+class LoggerTransform(FilterBase):
     """
-    A logger that uses print statements to log to stdout.
+    A logger sink filter.
+
+    Input Pins:
+    input - Accepts any mime type. Whatever is sent here gets logged.
     """
 
     def __init__(self, name, config_dict, graph_manager):
-        super().__init__(name, config_dict, graph_manager, FilterType.source)
+        super().__init__(name, config_dict, graph_manager, FilterType.transform)
         #
         mime_type_map = {}
         mime_type_map['*'] = self.recv

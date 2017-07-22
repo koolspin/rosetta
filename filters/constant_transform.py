@@ -3,7 +3,7 @@ from graph.input_pin import InputPin
 from graph.output_pin import OutputPin
 
 
-class ConstantFilter(FilterBase):
+class ConstantTransform(FilterBase):
     """
     A constant filter - injects constants into the metadata_dict.
 

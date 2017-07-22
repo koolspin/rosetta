@@ -1,6 +1,6 @@
 from filters.dummy_sink import DummySink
 from filters.dummy_source import DummySource
-from filters.print_logger import PrintLogger
+from filters.logger_transform import LoggerSink
 
 
 class TestGraphBuilder:
@@ -10,7 +10,7 @@ class TestGraphBuilder:
     def __init__(self):
         self._filters = {}
         source_filter = DummySource('dummy_source')
-        logging_filter = PrintLogger('print_logger')
+        logging_filter = LoggerSink('print_logger')
         sink_filter = DummySink('dummy_sink')
         self._filters[source_filter.filter_name] = source_filter
         self._filters[logging_filter.filter_name] = logging_filter

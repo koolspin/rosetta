@@ -9,8 +9,8 @@
       "config": { "web_request_uri": "http://json-schema.org/example/geo.json" }
     },
     {
-      "module_path": "filters.print_logger",
-      "class_name": "PrintLogger",
+      "module_path": "filters.logger_transform",
+      "class_name": "LoggerTransform",
       "instance_name": "print_logger_1",
       "config": {}
     },
@@ -24,7 +24,7 @@
 
   "pin_connections": [
     {
-      "source_filter": "http_client",
+      "source_filter": "http_client_source",
       "source_pin": "output",
       "target_filter": "print_logger_1",
       "target_pin": "input"

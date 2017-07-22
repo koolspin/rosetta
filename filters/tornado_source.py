@@ -86,6 +86,16 @@ class MainHandler(tornado.web.RequestHandler):
 class TornadoSource(FilterBase):
     """
     A Tornado instance represented as a source filter
+
+    Input Pins:
+    input1 - inputn - Accepts any mime type.
+
+    Output Pins:
+    output1_get - outputn_get - issues a GET downstream
+    output1_get - outputn_get - issues a GET downstream
+    output1_post - outputn_post - issues a POST downstream
+    output1_put - outputn_put - issues a PUT downstream
+    output1_delete - outputn_delete - issues a PUT downstream
     """
     CONFIG_KEY_URI_PATHS = 'uri_paths'
     METADATA_KEY_HANDLER_ID = 'web_handler_id'

@@ -9,15 +9,9 @@
       "config": { "uri_paths": ["/test", "/db/.*"] }
     },
     {
-      "module_path": "filters.print_logger",
+      "module_path": "filters.logger_transform",
       "class_name": "PrintLogger",
       "instance_name": "print_logger_1",
-      "config": {}
-    },
-    {
-      "module_path": "filters.print_logger",
-      "class_name": "PrintLogger",
-      "instance_name": "print_logger_3",
       "config": {}
     },
     {

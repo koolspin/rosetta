@@ -24,8 +24,8 @@
       "config": {}
     },
     {
-      "module_path": "filters.print_logger",
-      "class_name": "PrintLogger",
+      "module_path": "filters.logger_transform",
+      "class_name": "LoggerTransform",
       "instance_name": "print_logger_1",
       "config": {}
     },
