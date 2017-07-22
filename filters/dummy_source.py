@@ -4,7 +4,7 @@ from graph.output_pin import OutputPin
 
 class DummySource(FilterBase):
     """
-    A dummy filter source
+    A dummy filter source. Useful for debugging, but should be replaced with a constant_source filter one day.
     TODO: Delete this one day soon
     """
 

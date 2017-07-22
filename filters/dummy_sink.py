@@ -4,9 +4,11 @@ from graph.input_pin import InputPin
 
 class DummySink(FilterBase):
     """
-    A dummy sink
-    """
+    A dummy sink. Takes input and does absolutely nothing with it.
 
+    Input Pins:
+    input - Accepts any mime type.
+    """
     def __init__(self, name, config_dict, graph_manager):
         super().__init__(name, config_dict, graph_manager, FilterType.sink)
         #

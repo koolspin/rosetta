@@ -18,8 +18,8 @@
         }
     },
     {
-      "module_path": "filters.http_client",
-      "class_name": "HttpClient",
+      "module_path": "filters.http_client_source",
+      "class_name": "HttpClientSource",
       "instance_name": "http_client",
       "config": {}
     },

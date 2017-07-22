@@ -1,6 +1,7 @@
 import json
 import tornado.ioloop
 import tornado.web
+import tornado.httpserver
 from tornado.platform.asyncio import AsyncIOMainLoop
 from graph.filter_base import FilterBase, FilterState, FilterType
 from graph.input_pin import InputPin
@@ -110,6 +111,7 @@ class TornadoSource(FilterBase):
         self._is_continuous = True
         #
         self._application = None
+        self._server = None
         self._active_handlers = {}
         self._uri_paths = self._config_dict.get(TornadoSource.CONFIG_KEY_URI_PATHS)
         for i in range(len(self._uri_paths)):
@@ -148,18 +150,18 @@ class TornadoSource(FilterBase):
             t = (self._uri_paths[i], MainHandler, dict(filter=self, opin_get=opin_get, opin_post=opin_post, opin_put=opin_put, opin_delete=opin_delete))
             uri_list.append(t)
         self._application = tornado.web.Application(uri_list)
-        # application = tornado.web.Application([
-        #     (r".*", MainHandler, dict(output_pin=self._output_pin)),
-        # ])
+        self._server = tornado.httpserver.HTTPServer(self._application)
         self._set_filter_state(FilterState.running)
 
     def graph_is_running(self):
         super().graph_is_running()
-        self._application.listen(8888)
+        self._server.listen(8888)
 
     def stop(self):
         super().stop()
-        # TODO: Need to stop the server here
+        if self._server is not None:
+            self._server.stop()
+            self._server = None
         self._set_filter_state(FilterState.stopped)
 
     def recv(self, mime_type, payload, metadata_dict):

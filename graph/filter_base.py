@@ -42,9 +42,10 @@ class FilterType(Enum):
     A valid graph must contain at least one source and one sink.
     TODO: How do we handle filters that can be both like a network socket?
     """
-    source = 0
-    transform = 1
+    source = 1
     sink = 2
+    source_sink = 3
+    transform = 4
 
 
 class FilterBase:
@@ -59,12 +60,18 @@ class FilterBase:
         self._filter_state = FilterState.stopped
         self._graph_manager = graph_manager
         self._filter_type = filter_type
+        # This is the only protocol available now, might change in the future
+        self._protocol_version = 1
         # A filter is continuous if it can generate multiple output events over a normal lifetime.
         # Ex: A web server filter or network socket filter
         # A filter is not continuous if it usually generates a single output event.
         # Ex: A file reader filter
         # A graph that contain no continuous filters is able to run in one-shot mode
         self._is_continuous = False
+
+    @property
+    def protocol_version(self):
+        return self._protocol_version
 
     @property
     def filter_name(self):

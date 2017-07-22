@@ -5,14 +5,21 @@ from graph.output_pin import OutputPin
 
 class ConstantFilter(FilterBase):
     """
-    A constant filter
+    A constant filter - injects constants into the metadata_dict.
+
+    Input Pins:
+    input - Accepts any mime type.
+
+    Output Pins:
+    output - Required - Whatever appears on input is copied to output with the metadata_dict modified according to the
+                        configuration of this filter.
     """
     CONFIG_KEY_MIME_TYPE = 'const_mime_type'
     CONFIG_KEY_PAYLOAD = 'const_payload'
     CONFIG_KEY_METADATA_DICT = 'const_metadata_dict'
 
     def __init__(self, name, config_dict, graph_manager):
-        super().__init__(name, config_dict, graph_manager, FilterType.source)
+        super().__init__(name, config_dict, graph_manager, FilterType.transform)
         self._mime_type = config_dict[ConstantFilter.CONFIG_KEY_MIME_TYPE]
         self._payload = config_dict[ConstantFilter.CONFIG_KEY_PAYLOAD]
         self._metadata_dict = config_dict.get(ConstantFilter.CONFIG_KEY_METADATA_DICT)

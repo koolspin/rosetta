@@ -21,7 +21,7 @@
       "config": {}
     },
     {
-      "module_path": "filters.constant_filter",
+      "module_path": "filters.constant_transform",
       "class_name": "ConstantFilter",
       "instance_name": "constant_filter_1",
       "config": { "const_mime_type": "text/plain", "const_payload": "Filter 1 response!" }
@@ -39,7 +39,7 @@
         }
     },
     {
-      "module_path": "filters.constant_filter",
+      "module_path": "filters.constant_transform",
       "class_name": "ConstantFilter",
       "instance_name": "constant_filter_3",
       "config": { "const_mime_type": "text/plain", "const_payload": "Data saved!" }

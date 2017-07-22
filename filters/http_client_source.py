@@ -6,11 +6,15 @@ from graph.input_pin import InputPin
 from graph.output_pin import OutputPin
 
 
-class HttpClient(FilterBase):
+class HttpClientSource(FilterBase):
     """
-    An HTTP client filter
+    An HTTP client source filter. Implements the http GET method.
 
-    TODO: Remove this filter and use http_client_sink or http_client_source instead
+    Input Pins:
+    input - Accepts any mime type. Used only to provide METADATA_KEY_REQUEST_URI in the metadata_dict.
+
+    Output Pins:
+    output - Required - Whatever is fetched will be sent downstream via this pin.
     """
 
     def __init__(self, name, config_dict, graph_manager):
@@ -23,6 +27,8 @@ class HttpClient(FilterBase):
         self._output_pin = OutputPin('output', True)
         self._add_output_pin(self._output_pin)
         self._request_uri = config_dict.get(TornadoSource.METADATA_KEY_REQUEST_URI)
+        if self._request_uri is None:
+            self._filter_type = FilterType.transform
 
     def run(self):
         super().run()
