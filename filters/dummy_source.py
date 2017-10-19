@@ -7,6 +7,10 @@ class DummySource(FilterBase):
     A dummy filter source. Useful for debugging, but should be replaced with a constant_source filter one day.
     TODO: Delete this one day soon
     """
+    FilterBase.filter_meta[FilterBase.FILTER_META_NAME] = "DummySource"
+    FilterBase.filter_meta[FilterBase.FILTER_META_DESC] = "A dummy source filter"
+    FilterBase.filter_meta[FilterBase.FILTER_META_VER] = "0.9.0"
+    FilterBase.filter_meta[FilterBase.FILTER_META_ORIGIN_URL] = "https://github.com/koolspin"
 
     def __init__(self, name, config_dict, graph_manager):
         super().__init__(name, config_dict, graph_manager, FilterType.source)

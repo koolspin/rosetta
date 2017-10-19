@@ -31,6 +31,18 @@ class GraphManager:
         inst = klass(instance_name, config_dict, self)
         return inst
 
+    def get_filter_metadata(self, module_path, class_name):
+        """
+        Get's metadata about the filter
+        :param module_path: The path to the module, for example filters.print_logger
+        :param class_name: The name of the class
+        :return: Returns filter information as a dictionary
+        """
+        mod = importlib.import_module(module_path)
+        klass = getattr(mod, class_name)
+        info_dict = klass.get_filter_metadata()
+        return info_dict
+
     def add_filter(self, filter):
         if filter.filter_name in self._filters:
             raise KeyError('A filter named {0} already exists in the graph'.format(filter.filter_name))

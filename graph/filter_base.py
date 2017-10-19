@@ -52,6 +52,12 @@ class FilterBase:
     """
     Rosetta graph filter base object
     """
+    FILTER_META_NAME = 'FILTER_META_NAME'
+    FILTER_META_DESC = 'FILTER_META_DESC'
+    FILTER_META_VER = 'FILTER_META_VER'
+    FILTER_META_ORIGIN_URL = 'FILTER_META_ORIGIN_URL'
+    filter_meta = {}
+
     def __init__(self, name, config_dict, graph_manager, filter_type):
         self._filter_name = name
         self._config_dict = config_dict
@@ -68,6 +74,10 @@ class FilterBase:
         # Ex: A file reader filter
         # A graph that contain no continuous filters is able to run in one-shot mode
         self._is_continuous = False
+
+    @staticmethod
+    def get_filter_metadata():
+        return FilterBase.filter_meta
 
     @property
     def protocol_version(self):
