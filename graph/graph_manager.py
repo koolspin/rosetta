@@ -40,8 +40,9 @@ class GraphManager:
         """
         mod = importlib.import_module(module_path)
         klass = getattr(mod, class_name)
-        info_dict = klass.get_filter_metadata()
-        return info_dict
+        meta_dict = klass.get_filter_metadata()
+        pad_templates = klass.get_filter_pad_templates()
+        return meta_dict, pad_templates
 
     def add_filter(self, filter):
         if filter.filter_name in self._filters:

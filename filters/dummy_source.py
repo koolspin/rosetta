@@ -1,4 +1,4 @@
-from graph.filter_base import FilterBase, FilterState, FilterType
+from graph.filter_base import FilterBase, FilterState, FilterType, FilterPadTemplate, PadCapabilities
 from graph.output_pin import OutputPin
 
 
@@ -10,7 +10,24 @@ class DummySource(FilterBase):
     FilterBase.filter_meta[FilterBase.FILTER_META_NAME] = "DummySource"
     FilterBase.filter_meta[FilterBase.FILTER_META_DESC] = "A dummy source filter"
     FilterBase.filter_meta[FilterBase.FILTER_META_VER] = "0.9.0"
+    FilterBase.filter_meta[FilterBase.FILTER_META_RANK] = FilterBase.FILTER_RANK_NONE
     FilterBase.filter_meta[FilterBase.FILTER_META_ORIGIN_URL] = "https://github.com/koolspin"
+    FilterBase.filter_meta[FilterBase.FILTER_META_KLASS] = "Source/Dummy"
+
+    # Our one and only source pad
+    src_pad = FilterPadTemplate()
+    src_pad.name = 'src'
+    src_pad.type = FilterPadTemplate.PAD_TYPE_SOURCE
+    src_pad.availability = FilterPadTemplate.AVAILABILITY_ALWAYS
+
+    src_pad_cap = PadCapabilities()
+    src_pad_cap.mime_type = 'application/octet-stream'
+    src_pad_cap.pad_properties['format'] = ['foo', 'temp', 'boo']
+    src_pad_cap.pad_properties['fizzbuzz'] = ['moo', 'cow']
+
+    src_pad.capabilities.append(src_pad_cap)
+
+    FilterBase.filter_pad_templates[src_pad.name] = src_pad
 
     def __init__(self, name, config_dict, graph_manager):
         super().__init__(name, config_dict, graph_manager, FilterType.source)

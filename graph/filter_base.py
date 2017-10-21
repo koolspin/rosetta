@@ -48,15 +48,56 @@ class FilterType(Enum):
     transform = 4
 
 
+class PadCapabilities:
+    def __init__(self) -> None:
+        super().__init__()
+        self.mime_type = ''
+        self.pad_properties = {}
+
+
+class FilterPadTemplate:
+    AVAILABILITY_ALWAYS = 0
+    AVAILABILITY_SOMETIMES = 1
+    AVAILABILITY_ON_REQUEST = 2
+    PAD_TYPE_SOURCE = 0
+    PAD_TYPE_SINK = 1
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.name = ''
+        self.type = FilterPadTemplate.PAD_TYPE_SOURCE
+        self.availability = FilterPadTemplate.AVAILABILITY_ALWAYS
+        self.capabilities = []
+
+
 class FilterBase:
     """
     Rosetta graph filter base object
     """
+    #### Filter ranks
+    FILTER_RANK_NONE = 0
+    FILTER_RANK_MARGINAL = 1
+    FILTER_RANK_SECONDARY = 2
+    FILTER_RANK_PRIMARY = 3
+
+    #### Filter metadata
+    # The name of the filter
     FILTER_META_NAME = 'FILTER_META_NAME'
+    # Description
     FILTER_META_DESC = 'FILTER_META_DESC'
+    # Version in major.minor.revision format
     FILTER_META_VER = 'FILTER_META_VER'
+    # How likely this filter is to be automatically plugged into a graph (0-255)
+    FILTER_META_RANK = 'FILTER_META_RANK'
+    # Where did this thing come from?
     FILTER_META_ORIGIN_URL = 'FILTER_META_ORIGIN_URL'
+    # Original author
+    FILTER_META_AUTHOR = 'FILTER_META_AUTHOR'
+    # Klass id - used for finding classes of filters. Ex: Source/DB, Sink/Network/Protocol/Device
+    FILTER_META_KLASS = 'FILTER_META_KLASS'
     filter_meta = {}
+    #### Pad metadata
+    filter_pad_templates = {}
 
     def __init__(self, name, config_dict, graph_manager, filter_type):
         self._filter_name = name
@@ -78,6 +119,10 @@ class FilterBase:
     @staticmethod
     def get_filter_metadata():
         return FilterBase.filter_meta
+
+    @staticmethod
+    def get_filter_pad_templates():
+        return FilterBase.filter_pad_templates
 
     @property
     def protocol_version(self):
