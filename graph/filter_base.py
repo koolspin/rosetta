@@ -1,5 +1,7 @@
 from enum import Enum
 
+from graph.pad import Pad
+
 
 class FilterState(Enum):
     """
@@ -42,32 +44,11 @@ class FilterType(Enum):
     A valid graph must contain at least one source and one sink.
     TODO: How do we handle filters that can be both like a network socket?
     """
+    # TODO: Deprecated
     source = 1
     sink = 2
     source_sink = 3
     transform = 4
-
-
-class PadCapabilities:
-    def __init__(self) -> None:
-        super().__init__()
-        self.mime_type = ''
-        self.pad_properties = {}
-
-
-class FilterPadTemplate:
-    AVAILABILITY_ALWAYS = 0
-    AVAILABILITY_SOMETIMES = 1
-    AVAILABILITY_ON_REQUEST = 2
-    PAD_TYPE_SOURCE = 0
-    PAD_TYPE_SINK = 1
-
-    def __init__(self) -> None:
-        super().__init__()
-        self.name = ''
-        self.type = FilterPadTemplate.PAD_TYPE_SOURCE
-        self.availability = FilterPadTemplate.AVAILABILITY_ALWAYS
-        self.capabilities = []
 
 
 class FilterBase:
@@ -96,12 +77,16 @@ class FilterBase:
     # Klass id - used for finding classes of filters. Ex: Source/DB, Sink/Network/Protocol/Device
     FILTER_META_KLASS = 'FILTER_META_KLASS'
     filter_meta = {}
-    #### Pad metadata
+    # Pad templates for this filter
+    # Note this dictionary is keyed by the actual pad name and not the name template
     filter_pad_templates = {}
 
     def __init__(self, name, config_dict, graph_manager, filter_type):
         self._filter_name = name
         self._config_dict = config_dict
+        self._source_pads = {}
+        self._sink_pads = {}
+        # Deprecated - remove
         self._input_pins = {}
         self._output_pins = {}
         self._filter_state = FilterState.stopped
@@ -115,6 +100,8 @@ class FilterBase:
         # Ex: A file reader filter
         # A graph that contain no continuous filters is able to run in one-shot mode
         self._is_continuous = False
+        # Make sure to crate the pads that are defined for this filter's template
+        self._create_always_pads_from_template()
 
     @staticmethod
     def get_filter_metadata():
@@ -197,6 +184,21 @@ class FilterBase:
         :return:
         """
         pass
+
+    def _create_always_pads_from_template(self):
+        """
+        Create the always available pads from the templates defined for this filter
+        :return: None
+        """
+        for key, val in FilterBase.filter_pad_templates.items():
+            if val.is_present_always():
+                new_pad = Pad.create_pad_from_template(val, key)
+                if new_pad.is_src():
+                    self._source_pads[key] = new_pad
+                elif new_pad.is_sink():
+                    self._sink_pads[key] = new_pad
+                else:
+                    raise Exception("Cannot add an unknown pad type from the source template")
 
     def _add_input_pin(self, input_pin):
         """

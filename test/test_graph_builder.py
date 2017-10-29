@@ -1,6 +1,6 @@
 from filters.dummy_sink import DummySink
 from filters.dummy_source import DummySource
-from filters.logger_transform import LoggerSink
+from filters.logger_sink import LoggerSink
 
 
 class TestGraphBuilder:
