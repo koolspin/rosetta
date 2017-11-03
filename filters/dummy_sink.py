@@ -9,6 +9,9 @@ class DummySink(FilterBase):
     Input Pins:
     input - Accepts any mime type.
     """
+    filter_pad_templates = {}
+    filter_meta = {}
+
     def __init__(self, name, config_dict, graph_manager):
         super().__init__(name, config_dict, graph_manager, FilterType.sink)
         #
@@ -30,4 +33,12 @@ class DummySink(FilterBase):
             self._cycle_ended()
         else:
             raise RuntimeError('{0} tried to process input while filter state is {1}'.format(self.filter_name, self.filter_state))
+
+    @staticmethod
+    def get_filter_metadata():
+        return FilterBase.filter_meta
+
+    @staticmethod
+    def get_filter_pad_templates():
+        return FilterBase.filter_pad_templates
 

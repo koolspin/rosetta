@@ -3,6 +3,9 @@ from graph.pad_template import PadTemplate
 from graph.pad_capabilities import PadCapabilities
 
 
+def get_plugin_metadata():
+    return ['DummySource']
+
 class DummySource(FilterBase):
     """
     A dummy filter source. Useful for debugging, but should be replaced with a constant_source filter one day.
@@ -12,6 +15,7 @@ class DummySource(FilterBase):
     # Note - these static methods MUST be implemented by all filters.
     print('######## Executing static variable init on DummySource')
     filter_meta = {}
+    filter_meta[FilterBase.FILTER_META_FULLY_QUALIFIED] = "com.urbtek.dummy_source"
     filter_meta[FilterBase.FILTER_META_NAME] = "DummySource"
     filter_meta[FilterBase.FILTER_META_DESC] = "A dummy source filter"
     filter_meta[FilterBase.FILTER_META_VER] = "0.9.0"

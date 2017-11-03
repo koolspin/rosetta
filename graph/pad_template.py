@@ -20,7 +20,7 @@ class PadTemplate:
 
     @property
     def name_template(self):
-        return self._name
+        return self._name_template
 
     @property
     def direction(self):

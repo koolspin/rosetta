@@ -14,6 +14,8 @@ class ConstantTransform(FilterBase):
     output - Required - Whatever appears on input is copied to output with the metadata_dict modified according to the
                         configuration of this filter.
     """
+    filter_pad_templates = {}
+    filter_meta = {}
     CONFIG_KEY_MIME_TYPE = 'const_mime_type'
     CONFIG_KEY_PAYLOAD = 'const_payload'
     CONFIG_KEY_METADATA_DICT = 'const_metadata_dict'
@@ -46,3 +48,11 @@ class ConstantTransform(FilterBase):
             self._output_pin.send(self._mime_type, self._payload, metadata_dict)
         else:
             raise RuntimeError('{0} tried to process input while filter state is {1}'.format(self.filter_name, self.filter_state))
+
+    @staticmethod
+    def get_filter_metadata():
+        return FilterBase.filter_meta
+
+    @staticmethod
+    def get_filter_pad_templates():
+        return FilterBase.filter_pad_templates

@@ -10,6 +10,8 @@ class Timer(FilterBase):
     A timer filter to trigger a request at given intervals
     """
     # TODO: Make these constants generic
+    filter_pad_templates = {}
+    filter_meta = {}
     CONFIG_KEY_MIME_TYPE = 'timer_mime_type'
     CONFIG_KEY_PAYLOAD = 'timer_payload'
     CONFIG_KEY_METADATA_DICT = 'timer_metadata_dict'
@@ -60,3 +62,11 @@ class Timer(FilterBase):
         self._timer_task.cancel()
         with suppress(asyncio.CancelledError):
             await self._timer_task
+
+    @staticmethod
+    def get_filter_metadata():
+        return FilterBase.filter_meta
+
+    @staticmethod
+    def get_filter_pad_templates():
+        return FilterBase.filter_pad_templates

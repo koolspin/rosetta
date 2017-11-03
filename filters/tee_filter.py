@@ -8,6 +8,8 @@ class TeeFilter(FilterBase):
     T-Filter takes a single input and copies it to multiple outputs.
     The names of output filters will be 'output1' - 'outputn'
     """
+    filter_pad_templates = {}
+    filter_meta = {}
     CONFIG_KEY_OUTPUT_COUNT = 'output_pin_count'
     MAX_OUTPUT_COUNT = 128
 
@@ -46,3 +48,11 @@ class TeeFilter(FilterBase):
                 output_pin.send(mime_type, payload, metadata_dict)
         else:
             raise RuntimeError('{0} tried to process input while filter state is {1}'.format(self.filter_name, self.filter_state))
+
+    @staticmethod
+    def get_filter_metadata():
+        return FilterBase.filter_meta
+
+    @staticmethod
+    def get_filter_pad_templates():
+        return FilterBase.filter_pad_templates

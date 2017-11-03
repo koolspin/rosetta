@@ -62,6 +62,8 @@ class FilterBase:
     FILTER_RANK_PRIMARY = 3
 
     #### Filter metadata
+    # The fully qualified name of the filter, ex: com.urbtek.logger_sink
+    FILTER_META_FULLY_QUALIFIED = 'FILTER_META_FULLY_QUALIFIED'
     # The name of the filter
     FILTER_META_NAME = 'FILTER_META_NAME'
     # Description
@@ -76,22 +78,24 @@ class FilterBase:
     FILTER_META_AUTHOR = 'FILTER_META_AUTHOR'
     # Klass id - used for finding classes of filters. Ex: Source/DB, Sink/Network/Protocol/Device
     FILTER_META_KLASS = 'FILTER_META_KLASS'
-    filter_meta = {}
-    # Pad templates for this filter
-    # Note this dictionary is keyed by the actual pad name and not the name template
-    filter_pad_templates = {}
+
+    #### Default names
+    DEFAULT_SOURCE_PAD_NAME = 'src'
+    DEFAULT_SINK_PAD_NAME = 'sink'
 
     def __init__(self, name, config_dict, graph_manager, filter_type):
         self._filter_name = name
         self._config_dict = config_dict
         self._source_pads = {}
         self._sink_pads = {}
-        # Deprecated - remove
+
+        # TODO: Deprecated
         self._input_pins = {}
         self._output_pins = {}
-        self._filter_state = FilterState.stopped
-        self._graph_manager = graph_manager
         self._filter_type = filter_type
+
+        self._graph_manager = graph_manager
+        self._filter_state = FilterState.stopped
         # This is the only protocol available now, might change in the future
         self._protocol_version = 1
         # A filter is continuous if it can generate multiple output events over a normal lifetime.
@@ -100,16 +104,6 @@ class FilterBase:
         # Ex: A file reader filter
         # A graph that contain no continuous filters is able to run in one-shot mode
         self._is_continuous = False
-        # Make sure to crate the pads that are defined for this filter's template
-        self._create_always_pads_from_template()
-
-    @staticmethod
-    def get_filter_metadata():
-        return FilterBase.filter_meta
-
-    @staticmethod
-    def get_filter_pad_templates():
-        return FilterBase.filter_pad_templates
 
     @property
     def protocol_version(self):
@@ -123,14 +117,17 @@ class FilterBase:
     def filter_state(self):
         return self._filter_state
 
+    # TODO: Deprecated
     @property
     def filter_type(self):
         return self._filter_type
 
+    # TODO: Deprecated
     @property
     def is_continuous(self):
         return self._is_continuous
 
+    # TODO: Deprecated
     def get_input_pin(self, input_pin_name):
         """
         Return a reference to the input pin by name
@@ -140,9 +137,11 @@ class FilterBase:
         ipin = self._input_pins.get(input_pin_name)
         return ipin
 
+    # TODO: Deprecated
     def get_all_input_pins(self):
         return self._input_pins.items()
 
+    # TODO: Deprecated
     def get_output_pin(self, output_pin_name):
         """
         Return a reference to the input pin by name
@@ -152,8 +151,33 @@ class FilterBase:
         opin = self._output_pins.get(output_pin_name)
         return opin
 
+    # TODO: Deprecated
     def get_all_output_pins(self):
         return self._output_pins.items()
+
+    def get_sink_pad(self, sink_pad_name):
+        """
+        Return a reference to the sink pad by name
+        :param sink_pad_name: The name of the pad to retrieve
+        :return: An source pad reference or None if not found
+        """
+        sink_pad = self._sink_pads.get(sink_pad_name)
+        return sink_pad
+
+    def get_all_sink_pads(self):
+        return self._sink_pads.items()
+
+    def get_source_pad(self, source_pad_name):
+        """
+        Return a reference to the source pad by name
+        :param source_pad_name: The name of the source pad to retrieve
+        :return: An source pad reference or None if not found
+        """
+        source_pad = self._source_pads.get(source_pad_name)
+        return source_pad
+
+    def get_all_source_pads(self):
+        return self._source_pads.items()
 
     def run(self):
         """
@@ -185,17 +209,17 @@ class FilterBase:
         """
         pass
 
-    def _create_always_pads_from_template(self):
+    def _create_always_pads_from_template(self, template_dict):
         """
         Create the always available pads from the templates defined for this filter
         :return: None
         """
-        for key, val in FilterBase.filter_pad_templates.items():
+        for key, val in template_dict.items():
             if val.is_present_always():
                 new_pad = Pad.create_pad_from_template(val, key)
-                if new_pad.is_src():
+                if new_pad.is_src:
                     self._source_pads[key] = new_pad
-                elif new_pad.is_sink():
+                elif new_pad.is_sink:
                     self._sink_pads[key] = new_pad
                 else:
                     raise Exception("Cannot add an unknown pad type from the source template")

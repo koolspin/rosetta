@@ -13,6 +13,9 @@ class HttpClientSink(FilterBase):
     input - Accepts any mime type. Used to provide METADATA_KEY_REQUEST_URI and METADATA_KEY_REQUEST_METHOD in the metadata_dict.
     """
 
+    filter_pad_templates = {}
+    filter_meta = {}
+
     def __init__(self, name, config_dict, graph_manager):
         super().__init__(name, config_dict, graph_manager, FilterType.sink)
         #
@@ -83,4 +86,12 @@ class HttpClientSink(FilterBase):
             #     self._output_pin.send(mime_type, body_str, meta_dict)
         except Exception as e:
             print('Exception: %s %s' % (e, self._request_uri))
+
+    @staticmethod
+    def get_filter_metadata():
+        return FilterBase.filter_meta
+
+    @staticmethod
+    def get_filter_pad_templates():
+        return FilterBase.filter_pad_templates
 

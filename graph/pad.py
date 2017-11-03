@@ -21,8 +21,8 @@ class Pad:
             self._capabilities = None
         else:
             self._template = pad_template
-            self._direction = pad_template.direction()
-            self._capabilities = pad_template.caps()
+            self._direction = pad_template.direction
+            self._capabilities = pad_template.caps
 
     @property
     def name(self):
@@ -46,3 +46,18 @@ class Pad:
         """
         new_pad = Pad(pad_template, name)
         return new_pad
+
+    def is_src(self):
+        """
+        Returns true if this is a src pad
+        :return: true if this is a src pad
+        """
+        return self._direction == PadDirection.SOURCE
+
+    def is_sink(self):
+        """
+        Returns true if this is a sink pad
+        :return: true if this is a sink pad
+        """
+        return self._direction == PadDirection.SINK
+

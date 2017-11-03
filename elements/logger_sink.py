@@ -17,6 +17,7 @@ class LoggerSink(FilterBase):
     # Note - these static methods MUST be implemented by all filters.
     print('######## Executing static variable init on LoggerSink')
     filter_meta = {}
+    filter_meta[FilterBase.FILTER_META_FULLY_QUALIFIED] = "com.urbtek.logger_sink"
     filter_meta[FilterBase.FILTER_META_NAME] = "LoggerSink"
     filter_meta[FilterBase.FILTER_META_DESC] = "Logs whatever data arrives on the sink pad."
     filter_meta[FilterBase.FILTER_META_VER] = "0.9.0"

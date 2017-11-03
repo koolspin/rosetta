@@ -97,6 +97,8 @@ class TornadoSource(FilterBase):
     output1_put - outputn_put - issues a PUT downstream
     output1_delete - outputn_delete - issues a PUT downstream
     """
+    filter_pad_templates = {}
+    filter_meta = {}
     CONFIG_KEY_URI_PATHS = 'uri_paths'
     METADATA_KEY_HANDLER_ID = 'web_handler_id'
     METADATA_KEY_REQUEST_URI = 'web_request_uri'
@@ -189,3 +191,11 @@ class TornadoSource(FilterBase):
 
     def _get_active_handler(self, handler_id):
         return self._active_handlers.get(handler_id)
+
+    @staticmethod
+    def get_filter_metadata():
+        return FilterBase.filter_meta
+
+    @staticmethod
+    def get_filter_pad_templates():
+        return FilterBase.filter_pad_templates

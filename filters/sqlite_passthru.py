@@ -14,6 +14,8 @@ class SqlitePassthru(FilterBase):
     """
     A filter that writes the payload to a sqlite database
     """
+    filter_pad_templates = {}
+    filter_meta = {}
     CONFIG_KEY_TABLE_NAME_REGULAR_EXPRESSION = 'table_name_re'
     CONFIG_KEY_INSERT_TIMESTAMP_FLAG = 'insert_timestamp'
     CONFIG_KEY_UNIQUE_COLUMNS = 'unique_columns'
@@ -168,3 +170,11 @@ class SqlitePassthru(FilterBase):
         cur.execute(sql_stmt, val_array)
         self._db_conn.commit()
         return True
+
+    @staticmethod
+    def get_filter_metadata():
+        return FilterBase.filter_meta
+
+    @staticmethod
+    def get_filter_pad_templates():
+        return FilterBase.filter_pad_templates
